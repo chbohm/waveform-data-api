@@ -1,0 +1,46 @@
+<html>
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<STYLE TYPE="text/css">
+		table {
+			border-collapse: collapse;
+		}
+
+		table,
+		th,
+		td {
+			border: 1px solid black;
+			font-family: Verdana;
+			font-size: 10pt;
+			text-align: center;
+		}
+	</STYLE>
+
+</head>
+
+<body>
+	<table>
+		<tr>
+			<th>Period Type</th>
+			<th>Start date</th>
+			<th>end date</th>
+		</tr>
+		${periodInfo}
+	</table>
+	<table >
+		<tr>
+			<th>time stamp</th>
+			<th>issue key</th>
+			<th>issue type</th>
+			<th>summary</th>
+			<th>user</th>
+			<th>logged [h]</th>
+			<th>total logged [h]</th>
+		</tr>
+		${workloadList}
+	</table>
+
+</body>
+
+</html>

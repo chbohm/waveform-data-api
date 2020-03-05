@@ -1,0 +1,869 @@
+<html>
+
+<head>
+	<STYLE TYPE="text/css">
+		table {
+			border-collapse: collapse;
+		}
+
+		table,
+		th,
+		td {
+			border: 1px solid black;
+			font-family: Verdana;
+			font-size: 10pt;
+			text-align: center;
+		}
+	</STYLE>
+	<script>
+		/*
+		18 17 16 15 14 13 12 11     21 22 23 24 25 26 27 28
+		48 47 46 45 44 43 42 41     31 32 33 34 35 36 37 38
+		
+				 55 54 53 52 51     61 62 63 64 65 
+				 85 84 83 82 81     71 72 73 74 75 
+		*/
+
+		let allToothIds = "18 17 16 15 14 13 12 11 21 22 23 24 25 26 27 28 48 47 46 45 44 43 42 41 31 32 33 34 35 36 37 38 55 54 53 52 51 61 62 63 64 65 85 84 83 82 81 71 72 73 74 75".split(" ");
+
+		let toothFaceIds = ['TOP','BOTTOM','LEFT', 'RIGHT','CENTER']
+		let pageSet;
+		let currentPage;
+		let pageHeight = 1500;
+		let consultationFormList = {
+			consultationFormList: [
+				{
+					odontologist: 'Gruber',
+					odontologistId: 'odontologistId',
+					medicalInsuranceId: 'medicalInsuranceId',
+					consultation: {
+						"codeLines": [
+							{
+								"code": "10.3.4",
+								"idTooth": "21",
+								"idFace": "BOTOM",
+								"maxilaryType": "sup"
+							},
+							{
+								"code": "10.3.5",
+								"idTooth": "13",
+								"idFace": "CENTER",
+								"maxilaryType": "sup"
+							}
+						],
+						"comments": [],
+						"date": "2019-10-04",
+						"odontogram": {
+							"tooths": {
+								"11": {
+									"id": "11",
+									"state": "EXISTING",
+									"BOTTOM": "FIXED",
+									"CENTER": "FIXED"
+								},
+								"21": {
+									"id": "21",
+									"state": "REMOVED"
+								}
+							}
+						},
+						"patient": {
+							"affiliateId": "80006",
+							"medicalInsurance": "ACA SALUD",
+							"medicalInsuranceId": "73",
+							"owner": "Christian Bohm",
+							"address": "Uruguay 632",
+							"city": "Parana",
+							"dateOfBirth": "1980-05-07",
+							"dni": "28132661",
+							"firstName": "Christian",
+							"lastName": "Bohm"
+						}
+					}
+				},
+
+				{
+					odontologist: 'Pignolo',
+					odontologistId: 'PignoloId',
+					medicalInsuranceId: 'Pignolo.medicalInsuranceId',
+					consultation: {
+						"codeLines": [
+							{
+								"code": "20.3.1",
+								"idTooth": "11",
+								"idFace": "TOP",
+								"maxilaryType": "sup"
+							},
+							{
+								"code": "10.3.5",
+								"idTooth": "13",
+								"idFace": "LEFT",
+								"maxilaryType": "sup"
+							}
+						],
+						"comments": [],
+						"date": "2019-10-04",
+						"odontogram": {
+							"tooths": {
+								"23": {
+									"id": "23",
+									"state": "EXISTING",
+									"BOTTOM": "FIXED",
+									"CENTER": "FIXED"
+								},
+								"31": {
+									"id": "31",
+									"state": "TO_BE_REMOVED"
+								}
+							}
+						},
+						"patient": {
+							"affiliateId": "80006",
+							"medicalInsurance": "ACA SALUD",
+							"medicalInsuranceId": "73",
+							"owner": "Christian Bohm",
+							"address": "Uruguay 632",
+							"city": "Parana",
+							"dateOfBirth": "1980-05-07",
+							"dni": "28132661",
+							"firstName": "Ofelia",
+							"lastName": "Varga de Bohm"
+						}
+					}
+				}
+			]
+		};
+
+		function init() {
+			pageSet = document.getElementById('pageSet');
+			currentPage = pageSet.getElementById('page1');
+			try {
+				initOdontogram();
+				consultationFormList = [
+  {
+    "codeLines": [
+      {
+        "code": "10.3.4",
+        "idTooth": "21",
+        "idFace": "BOTOM",
+        "maxilaryType": "sup"
+      },
+      {
+        "code": "10.3.5",
+        "idTooth": "13",
+        "idFace": "CENTER",
+        "maxilaryType": "sup"
+      }
+    ],
+    "comments": [],
+    "date": "2019-10-04",
+    "odontogram": {
+      "tooths": {
+        "11": {
+          "id": "11",
+          "state": "EXISTING",
+          "BOTTOM": "FIXED",
+          "CENTER": "FIXED"
+        },
+        "21": {
+          "id": "21",
+          "state": "REMOVED"
+        }
+      }
+    },
+    "patient": {
+      "affiliateId": "80006",
+      "medicalInsurance": "ACA SALUD",
+      "medicalInsuranceId": "73",
+      "owner": "Christian Bohm",
+      "address": "Uruguay 632",
+      "city": "Parana",
+      "dateOfBirth": "1980-05-07",
+      "dni": "28132661",
+      "firstName": "Christian",
+      "lastName": "Bohm"
+    }
+  },
+  {
+    "codeLines": [
+      {
+        "code": "10.3.4",
+        "idTooth": "21",
+        "idFace": "BOTOM",
+        "maxilaryType": "sup"
+      }
+    ],
+    "comments": [],
+    "date": "2019-11-03",
+    "odontogram": {
+      "tooths": {
+        "31": {
+          "id": "31",
+          "state": "EXISTING",
+          "BOTTOM": "FIXED",
+          "CENTER": "FIXED"
+        },
+        "43": {
+          "id": "43",
+          "state": "REMOVED"
+        }
+      }
+    },
+    "patient": {
+      "affiliateId": "80006",
+      "medicalInsurance": "ACA SALUD",
+      "medicalInsuranceId": "73",
+      "owner": "Christian Bohm",
+      "address": "Uruguay 632",
+      "city": "Parana",
+      "dateOfBirth": "1980-05-07",
+      "dni": "28132661",
+      "firstName": "Christian",
+      "lastName": "Bohm"
+    }
+  }
+];
+				console.log(JSON.stringify(consultationFormList, null,2));
+				let pageCount = consultationFormList.length;
+				pageSet.setAttribute("height", pageHeight * pageCount);
+				for (let i = 0; i < pageCount; i++) {
+					if (i > 0) {
+						var newPage = currentPage.cloneNode(true)
+						newPage.id = "page" + (i + 1);
+						newPage.setAttribute("y", pageHeight * i);
+						pageSet.appendChild(newPage);
+						currentPage = newPage;
+
+					}
+					setConsultationData(consultationFormList[i], medicalInsuranceId, consultationFormList[i].odontologist, consultationFormList[i].dontologistId);
+				}
+
+			} catch (error) {
+				console.log(error)
+			}
+
+		}
+
+		function showAndroidToast(toast) {
+			if (typeof Android !== "undefined" && Android !== null) {
+				android.alert(toast);
+			} else {
+				alert("Not viewing in webview");
+			}
+		}
+
+		let toothWidth = 50
+		let toothHeight = 65
+		let spaceBetweenTeeth = 10
+		let columnSpace = spaceBetweenTeeth * 2
+
+		let colorToBeDone = "#0000ff"
+		let colorDone = "#ff0000"
+
+		function markToothFaces(tooth) {
+			toothFaceIds.forEach((faceId)=>markFace(tooth, faceId));
+		}
+		/**
+		{
+		  id: id,
+		  state: TO_BE_REMOVED |  REMOVED |  EXISTING,
+		  TOP | BOTTOM | LEFt | RIGHT | CENTER : TO_BE_FIXED |  FIXED |  HEALTHY,
+		  crown: NONE | TO_BE_ADDED | EXISTING
+		}
+		**/
+
+		function markTooth(tooth) {
+			if (tooth.state === 'EXISTING') {
+				markToothFaces(tooth);
+			} else if (tooth.state === 'TO_BE_REMOVED') {
+				markToothFaces(tooth);
+				markToothToBeRemoved(tooth.id)
+			} else if (tooth.state === 'REMOVED') {
+				markToothAsRemoved(tooth.id)
+			}
+
+			if (tooth.crown === 'EXISTING') {
+				markToothWithCrown(tooth.id)
+			} else if (tooth.crown === 'TO_BE_ADDED') {
+				markToothToAddCrown(tooth.id)
+			}
+		}
+
+		function getToBeDoneColor() {
+			return '#0000ff'
+		}
+
+
+		function markFace(tooth, faceId) {
+			let toothId = tooth.id;
+			let faceState = tooth[faceId];
+			if (!faceState) {
+				return;
+			}
+
+
+			let color = "#000000";
+			switch (faceState) {
+				case "TO_BE_FIXED": color = colorToBeDone; break;
+				case "FIXED": color = colorDone; break;
+				default: color = "color";
+			}
+			let toothSvg = currentPage.getElementById(toothId + '_tooth');
+			let part = toothSvg.getElementById(faceId.toLowerCase())
+			part.setAttribute("fill", color);
+		}
+
+		function unmarkTooth(toothId) {
+			let color = '#FFFFFF';
+			let toothSvg = currentPage.getElementById(toothId + '_tooth');
+			toothFaceIds.forEach((faceId)=>{
+				let part = toothSvg.getElementById(faceId.toLowerCase())
+				part.setAttribute('fill', color);
+			});
+			let crown = currentPage.getElementById(toothId + "_crown");
+			if (crown) {
+				crown.parentNode.removeChild(crown); 
+			}
+
+			let x = currentPage.getElementById(toothId + "_x");
+			if (x) {
+				x.parentNode.removeChild(x); 
+			}
+		}
+
+
+
+		function clone(sourceId, targetId, x, y, fillColor, strokeColor) {
+			var layer = currentPage.getElementById("paper");
+			var source = currentPage.getElementById(sourceId);
+			var target = source.cloneNode(true)
+			target.id = targetId
+			layer.appendChild(target)
+			target.setAttribute("x", x)
+			target.setAttribute("y", y)
+
+			if (fillColor && strokeColor) {
+				setStyle(target, fillColor, strokeColor)
+			}
+			return target;
+		}
+
+		function markToothWithFixedProsthesis(toothId) {
+			let position = getCrownPositionWithRespectToTooth(toothId)
+			let p = clone("removableProsthesis_x4", toothId + "removableProsthesis_x4", position.x, position.y)
+			p.getElementById("line").setAttribute("fill", colorDone)
+			p.getElementById("line").setAttribute("stroke", colorDone)
+		}
+
+		function createCrownForTooth(toothId) {
+			let crownPosition = getCrownPositionWithRespectToTooth(toothId)
+			return clone("crown", toothId + "_crown", crownPosition.x, crownPosition.y)
+		}
+
+		function markToothWithCrown(toothId) {
+			let crown = createCrownForTooth(toothId);
+			crown.getElementById("crown").setAttribute("stroke", "#000")
+		}
+
+
+		function markToothToAddCrown(toothId) {
+			let crown = createCrownForTooth(toothId);
+			crown.getElementById("crown").setAttribute("stroke", colorToBeDone)
+		}
+
+
+		function markToothToBeRemoved(toothId) {
+			let crownPosition = getCrownPositionWithRespectToTooth(toothId)
+			let x = clone("x", toothId + "_x", crownPosition.x, crownPosition.y)
+			x.getElementById("x").setAttribute("fill", colorToBeDone)
+		}
+
+		function markToothAsRemoved(toothId) {
+			let crownPosition = getCrownPositionWithRespectToTooth(toothId)
+			let x = clone("x", toothId + "_x", crownPosition.x, crownPosition.y)
+			x.getElementById("x").setAttribute("fill", colorDone)
+		}
+
+
+		function toString(obj) {
+			return JSON.stringify(obj)
+		}
+
+
+		function getCrownPositionWithRespectToTooth(toothId) {
+			let position = getPositionById(toothId + "_tooth")
+			position.x += 5
+			position.y += 5
+			return position
+		}
+
+		function setStyle(target, fillColor, strokeColor) {
+			target.setAttribute("fill", fillColor);
+			target.setAttribute("stroke", strokeColor);
+		}
+
+		function initRow(startLabel, step, numberOfToothInRow, startX, y, toothWidth, spaceBetweenTeeth) {
+			let endLabel = startLabel + (numberOfToothInRow * step)
+			let x = startX
+			for (let label = startLabel; label != endLabel; label += step) {
+				initTooth(label, x, y);
+				x = x + toothWidth + spaceBetweenTeeth
+			}
+		}
+
+		function setPosition(svgObj, position) {
+			svgObj.setAttribute("x", position.x)
+			svgObj.setAttribute("y", position.y)
+		}
+
+		function getPosition(svgObj) {
+			return { x: parseInt(svgObj.getAttribute("x")), y: parseInt(svgObj.getAttribute("y")) }
+		}
+
+		function getPositionById(id) {
+			svg = currentPage.getElementById(id);
+			return getPosition(svg);
+		}
+
+		function initOdontogram() {
+			initAllRows()
+			initDividingLines()
+		}
+
+		function initDividingLines() {
+			initHorizontalLines()
+			initVerticalLines()
+		}
+
+		function initVerticalLines() {
+
+			let x = 5 + getPositionById('11_tooth').x + toothWidth + spaceBetweenTeeth;
+
+			let topLineStart = 0
+			let topLineEnd = getPositionById('31_tooth').y + toothHeight;
+
+			let bottomLineStart = getPositionById('51_tooth').y;
+			let bottomLineEnd = getPositionById('81_tooth').y + toothHeight;
+
+
+			let topLine = {
+				x1: x,
+				y1: topLineStart,
+				x2: x,
+				y2: topLineEnd
+			}
+
+			let bottomLine = {
+				x1: x,
+				y1: bottomLineStart,
+				x2: x,
+				y2: bottomLineEnd
+			}
+
+			let line = clone("line", "topVerticalLine", 0, 0)
+			line.setAttribute('x1', topLine.x1)
+			line.setAttribute('y1', topLine.y1)
+			line.setAttribute('x2', topLine.x2)
+			line.setAttribute('y2', topLine.y2)
+
+			line = clone("line", "bottomVerticalLine", 0, 0)
+			line.setAttribute('x1', bottomLine.x1)
+			line.setAttribute('y1', bottomLine.y1)
+			line.setAttribute('x2', bottomLine.x2)
+			line.setAttribute('y2', bottomLine.y2)
+		}
+
+		function initHorizontalLines() {
+			let topLineY = getPositionById('48_tooth').y - spaceBetweenTeeth;
+			let botomLineY = getPositionById('85_tooth').y - spaceBetweenTeeth;
+
+			let topLineStart = 5
+			let topLineEnd = 5 + getPositionById('28_tooth').x + toothWidth;
+
+			let bottomLineStart = 5 + getPositionById('55_tooth').x;
+			let bottomLineEnd = 5 + getPositionById('65_tooth').x + toothWidth;
+
+
+			let topLine = {
+				x1: topLineStart,
+				y1: topLineY,
+				x2: topLineEnd,
+				y2: topLineY
+			}
+
+			let bottomLine = {
+				x1: bottomLineStart,
+				y1: botomLineY,
+				x2: bottomLineEnd,
+				y2: botomLineY
+			}
+
+			let line = clone("line", "topHorizontalLine", 0, 0)
+			line.setAttribute('x1', topLine.x1)
+			line.setAttribute('y1', topLine.y1)
+			line.setAttribute('x2', topLine.x2)
+			line.setAttribute('y2', topLine.y2)
+
+			line = clone("line", "bottomHorizontalLine", 0, 0)
+			line.setAttribute('x1', bottomLine.x1)
+			line.setAttribute('y1', bottomLine.y1)
+			line.setAttribute('x2', bottomLine.x2)
+			line.setAttribute('y2', bottomLine.y2)
+		}
+
+		function initAllRows() {
+			let yRow1 = 0
+			let yRow2 = yRow1 + toothHeight + spaceBetweenTeeth * 2
+			let yRow3 = yRow2 + toothHeight + 30
+			let yRow4 = yRow3 + toothHeight + spaceBetweenTeeth * 2
+
+			let x = 0;
+			initRow(18, -1, 8, x, yRow1, toothWidth, spaceBetweenTeeth);
+			initRow(48, -1, 8, x, yRow2, toothWidth, spaceBetweenTeeth);
+
+			let row55XPosition = getPositionById('45_tooth').x
+			x = row55XPosition
+			initRow(55, -1, 5, x, yRow3, toothWidth, spaceBetweenTeeth);
+			initRow(85, -1, 5, x, yRow4, toothWidth, spaceBetweenTeeth);
+
+
+			let secondColumnPosition = getPositionById('11_tooth').x + toothWidth + columnSpace
+			x = secondColumnPosition
+
+			initRow(21, 1, 8, x, yRow1, toothWidth, spaceBetweenTeeth);
+			initRow(31, 1, 8, x, yRow2, toothWidth, spaceBetweenTeeth);
+			initRow(61, 1, 5, x, yRow3, toothWidth, spaceBetweenTeeth);
+			initRow(71, 1, 5, x, yRow4, toothWidth, spaceBetweenTeeth);
+		}
+
+
+		function initTooth(id, x, y) {
+			var tooth = clone('tooth', id + '_tooth', x, y)
+			tooth.getElementById('label').innerHTML = id
+		}
+
+
+		function initButtonPressed() {
+			let toothNumber = currentPage.getElementById('toothId').value
+			init(toothNumber)
+		}
+
+		function addCommentLine(lineIndex, text) {
+			var table = currentPage.getElementById("commentsTable");
+			var row0 = table.getElementById("row0");
+			var newRow;
+			if (lineIndex !== 0) {
+				newRow = row0.cloneNode(true)
+				newRow.id = "row" + lineIndex
+				table.appendChild(newRow)
+				newRow.setAttribute("y", lineIndex * 8)
+			} else {
+				newRow = row0;
+			}
+			var textSvg = newRow.getElementById('text');
+			textSvg.innerHTML = text;
+		}
+
+		function addCodeLine(lineIndex, codeLine, tableName) {
+			var table = currentPage.getElementById(tableName);
+			var headerRow = table.getElementById("headerRow");
+			var newRow = headerRow.cloneNode(true)
+			newRow.id = "row" + lineIndex
+			table.appendChild(newRow)
+			newRow.setAttribute("y", (lineIndex + 1) * 8)
+
+			let idTooth = codeLine.idTooth || "";
+			let code = codeLine.code || "";
+			let idFace = codeLine.idFace || "";
+			let maxillaryType = codeLine.maxillaryType || "";
+			switch (maxillaryType) {
+				case "UPPER": maxillaryType = "Superior"; break;
+				case "BOTTOM": maxillaryType = "Inferior"; break;
+				default: ""
+			}
+			var svgItem = newRow.getElementById('code');
+			svgItem.innerHTML = code;
+			svgItem = newRow.getElementById('idTooth');
+			svgItem.innerHTML = idTooth;
+			svgItem = newRow.getElementById('idFace');
+			svgItem.innerHTML = idFace;
+			svgItem = newRow.getElementById('maxilaryType');
+			svgItem.innerHTML = maxillaryType;
+			svgItem = newRow.getElementById('patientConf');
+			svgItem.innerHTML = '';
+		}
+
+		// function init(toothNumber) {
+		// markTooth({ toothId: toothNumber, state:'EXISTING', crown:'TO_BE_ADDED' , 'top':'HEALTHY' , 'right':'HEALTHY' , 'bottom':'HEALTHY' , 'left':'FIXED' , 'center':'FIXED' })
+		// }
+
+
+		function setConsultationData(consultation, medicalInsuranceId, odontologist, odontologistId) {
+			//let consultation = JSON.parse(consultationStr);
+			//document.getElementById('console').innerHTML = JSON.stringify(consultation, null, 2);
+			currentPage.getElementById('date').innerHTML = formatDate(consultation.date)
+			let p = consultation.patient;
+			currentPage.getElementById('medicalInsuranceName').innerHTML = p.medicalInsuranceName
+			currentPage.getElementById('medicalInsuranceId').innerHTML = medicalInsuranceId
+			currentPage.getElementById('fullName').innerHTML = p.lastName + ' ' + p.firstName
+			currentPage.getElementById('dateOfBirth').innerHTML = formatDate(p.dateOfBirth)
+			currentPage.getElementById('dni').innerHTML = p.dni
+			currentPage.getElementById('address').innerHTML = p.address
+			currentPage.getElementById('city').innerHTML = p.city
+			currentPage.getElementById('owner').innerHTML = p.owner
+			currentPage.getElementById('odontologist').innerHTML = odontologist
+			currentPage.getElementById('odontologistId').innerHTML = odontologistId
+			fillOdontogram(consultation.odontogram.tooths);
+
+
+			for (let i = 0; i < consultation.codeLines.length; i++) {
+				addCodeLine(i, consultation.codeLines[i], 'codesTable');
+			}
+
+			var codeLinesTableHeight = (consultation.codeLines.length + 1) * 8;
+			var codesLinesTableY = parseInt(currentPage.getElementById("codesTable").getAttribute("y"));
+
+			var commentsTableSVG = currentPage.getElementById("commentsTable");
+			commentsTableSVG.setAttribute("y", codesLinesTableY + codeLinesTableHeight + 5);
+
+			let comments = consultation.comments || [];
+			let commentRows = '';
+			for (let i = 0; i < comments.length; i++) {
+				addCommentLine(i, comments[i])
+			}
+
+			var commentsLinesTableHeight = (consultation.comments.length + 1) * 8;
+			var commentsLinesTableY = parseInt(currentPage.getElementById("commentsTable").getAttribute("y"))
+			var signsTableSVG = currentPage.getElementById("signsTable");
+			signsTableSVG.setAttribute("y", commentsLinesTableY + commentsLinesTableHeight + 35);
+
+
+
+
+		}
+
+		function formatDate(date) {
+			if (!date) {
+				return ""
+			}
+			let dateArray = date.split('-');
+			return dateArray[2] + '/' + dateArray[1] + '/' + dateArray[0]
+		}
+
+
+
+		function fillOdontogram(tooths) {
+			allToothIds.forEach(id => unmarkTooth(id));
+			Object.keys(tooths).forEach((toothKey) => {
+				let tooth = tooths[toothKey];
+				markTooth(tooth);
+
+			})
+
+		}
+
+
+
+	</script>
+</head>
+
+<body onload="init()">
+	<!--<div>
+		<input type="text" id="toothId" value="17">
+		<input type="button" value="add crown" onClick="addXButtonPressed()"/>
+		<input type="button" value="init" onClick="initButtonPressed()"/>
+	</div>-->
+
+	<svg id="pageSet" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg"
+		height="2000" width="1000" version="1.1" xmlns:cc="http://creativecommons.org/ns#"
+		xmlns:dc="http://purl.org/dc/elements/1.1/">
+
+		<svg id="page1" x="0" y="0">
+			<svg id="form" x="85" y="0">
+				<g transform="scale(3 3)">
+					<!-- FECHA -->
+					<text x="5" y="5" font-family="Verdana" font-size="3">FECHA</text>
+					<rect x="0" y="7" height="8" width="33" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="1" y="13" id="date" font-family="Verdana" font-size="5">12/12/2019</text>
+
+					<!-- OBRA SOCIAL -->
+					<text x="40" y="5" font-family="Verdana" font-size="3">OBRA SOCIAL</text>
+					<rect x="35" y="7" height="8" width="67" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="36" y="13" id="medicalInsuranceName" font-family="Verdana"
+						font-size="5">01234567890123456789</text>
+					<!-- CODIGO -->
+					<text x="110" y="5" font-family="Verdana" font-size="3">CODIGO</text>
+					<rect x="105" y="7" height="8" width="67" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="106" y="13" id="medicalInsuranceId" font-family="Verdana"
+						font-size="5">01234567890123456789</text>
+					<!-- NRO AFILIADO -->
+					<text x="180" y="5" font-family="Verdana" font-size="3">NRO AFILIADO</text>
+					<rect x="175" y="7" height="8" width="92" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="176" y="13" id="affiliateId" font-family="Verdana"
+						font-size="5">0123456789012345678901234567</text>
+
+
+					<!-- Apellido y Nombre -->
+					<text x="5" y="20" font-family="Verdana" font-size="3">APELLIDO Y NOMBRE</text>
+					<rect x="0" y="22" height="8" width="172" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="1" y="28" id="fullName" font-family="Verdana" font-size="5">Böhm Christian</text>
+
+					<!-- FECHA NAC -->
+					<text x="180" y="20" font-family="Verdana" font-size="3">FECHA NAC</text>
+					<rect x="175" y="22" height="8" width="33" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="176" y="28" id="dateOfBirth" font-family="Verdana" font-size="5">12/12/2019</text>
+
+					<!-- DNI -->
+					<text x="216" y="20" font-family="Verdana" font-size="3">DNI</text>
+					<rect x="211" y="22" height="8" width="56" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="212" y="28" id="dni" font-family="Verdana" font-size="5">28132661</text>
+
+					<!-- Direccion -->
+					<text x="5" y="35" font-family="Verdana" font-size="3">DIRECCION</text>
+					<rect x="0" y="37" height="8" width="172" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="1" y="43" id="address" font-family="Verdana" font-size="5">Uruguay 632</text>
+
+					<!-- Localidad -->
+					<text x="180" y="35" font-family="Verdana" font-size="3">LOCALIDAD</text>
+					<rect x="175" y="37" height="8" width="92" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="176" y="43" id="city" font-family="Verdana" font-size="5">Paso de los Libres</text>
+
+					<!-- Titular -->
+					<text x="5" y="50" font-family="Verdana" font-size="3">TITULAR</text>
+					<rect x="0" y="52" height="8" width="267" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="1" y="58" id="owner" font-family="Verdana" font-size="5">Christian Böhm</text>
+
+					<!-- Odontologo -->
+					<text x="5" y="65" font-family="Verdana" font-size="3">ODONTOLOGO</text>
+					<rect x="0" y="67" height="8" width="208" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="1" y="73" id="odontologist" font-family="Verdana" font-size="5">Eduardo Pignolo</text>
+					<!-- MATRICULA -->
+					<text x="216" y="65" font-family="Verdana" font-size="3">MATRICULA</text>
+					<rect x="211" y="67" height="8" width="56" stroke="#000000" stroke-width=".045779" fill="none" />
+					<text x="212" y="73" id="odontologistId" font-family="Verdana" font-size="5">28132661</text>
+				</g>
+			</svg>
+			<svg x="0" y="250">
+
+				<line id="line" x1="0" y1="0" x2="0" y2="0" stroke="#000" stroke-width="2" fill="none" />
+				<g id="paper">
+					<svg id="tooth" x="1000" y="100">
+						<!--
+				  Tooth: 50 x 50 px
+				  Total Height with label: 65px
+				-->
+						<text id="label" x="25" y="10"
+							style="letter-spacing:0px;font-size:10px;word-spacing:0px;font-family:sans-serif;line-height:0%;fill:'#ff000'"
+							xml:space="preserve">18</text>
+						<rect id="center" x="15" y="25" height="30" width="30" stroke-width=".6" stroke-linejoin="round"
+							stroke="#000" fill="#fff" />
+						<path id="top" d="m5 15l10 10h30l10 -10z" stroke-width=".6" stroke-linejoin="round"
+							stroke="#000" fill="#fff" />
+						<path id="right" d="m55 15v50l-10 -10v-30z" stroke-width=".6" stroke-linejoin="round"
+							stroke="#000" fill="#fff" />
+						<path id="bottom" d="m15 55h30l10 10h-50z" stroke-width=".6" stroke-linejoin="round"
+							stroke="#000" fill="#fff" />
+						<path id="left" d="m5 15l10 10v30l-10 10z" stroke-width=".6" stroke-aligment="inside"
+							stroke-linejoin="round" stroke="#000" fill="#fff" />
+					</svg>
+					<svg id="x" x="1000" y="1000">
+						<path id="x" d="m0 10v5l20 20l-20 20v5h5l20 -20l20 20h5v-5l-20 -20l20 -20v-5h-5l-20 20l-20 -20z"
+							stroke-width=".6" stroke-linejoin="round" stroke="#000" fill="#fff" />
+					</svg>
+					<svg id="crown" x="1000" y="1000">
+						<circle id="crown" stroke-width="3" fill="none" stroke-linejoin="round" stroke="#000" cx="25"
+							cy="35" r="23" />
+						<!-- path  id="crown" stroke-width="3" fill="none" stroke-linejoin="round" stroke="#000" d="M (CX - R), CY a R,R 0 1,0 (R * 2),0 a R,R 0 1,0 -(R * 2),0"/ -->
+						<!-- <path  id="crown" stroke-width=".1" fill="#FF0000" stroke-linejoin="round" stroke="#000" d="m 2, 35 a 23,23 0 1,0 46,0 a 23,23 0 1,0 -46,0z m 3, 0 a 20,20 0 1,0 40,0 a 20,20 0 1,0 -40,0z"/> -->
+					</svg>
+
+					<svg id="fixedProsthesis_x1" x="1000" y="1000">
+						<path id="line" d="m0 10v10h5v-5h40v5h5v-10z" stroke-width=".6" stroke-linejoin="round"
+							stroke="#000" fill="#fff" />
+					</svg>
+					<svg id="removableProsthesis_x1" x="1000" y="1000">
+						<path id="line" d="m0 10v50h50v-25h-5v20h-40v-40h40v20h5v-25z" stroke-width=".6"
+							stroke-linejoin="round" stroke="#000" fill="#fff" />
+					</svg>
+
+					<svg id="fixedProsthesis_x2" x="1000" y="1000">
+						<path id="line" d="m0 10v10h5v-5h100v5h5v-10z" stroke-width=".6" stroke-linejoin="round"
+							stroke="#000" fill="#fff" />
+					</svg>
+					<svg id="removableProsthesis_x2" x="1000" y="1000">
+						<path id="line" d="m0 10v50h110v-25h-5v20h-100v-40h100v20h5v-25z" stroke-width=".6"
+							stroke-linejoin="round" stroke="#000" fill="#fff" />
+					</svg>
+
+					<svg id="fixedProsthesis_x3" x="1000" y="1000">
+						<path id="line" d="m0 10v10h5v-5h160v5h5v-10z" stroke-width=".6" stroke-linejoin="round"
+							stroke="#000" fill="#fff" />
+					</svg>
+					<svg id="removableProsthesis_x3" x="1000" y="1000">
+						<path id="line" d="m0 10v50h170v-25h-5v20h-160v-40h160v20h5v-25z" stroke-width=".6"
+							stroke-linejoin="round" stroke="#000" fill="#fff" />
+					</svg>
+					<svg id="fixedProsthesis_x4" x="1000" y="1000">
+						<path id="line" d="m0 10v10h5v-5h220v5h5v-10z" stroke-width=".6" stroke-linejoin="round"
+							stroke="#000" fill="#fff" />
+					</svg>
+					<svg id="removableProsthesis_x4" x="1000" y="1000">
+						<path id="line" d="m0 10v50h230v-25h-5v20h-220v-40h220v20h5v-25z" stroke-width=".6"
+							stroke-linejoin="round" stroke="#000" fill="#fff" />
+					</svg>
+					<svg id="fixedProsthesis_x5" x="1000" y="1000">
+						<path id="line" d="m0 10v10h5v-5h280v5h5v-10z" stroke-width=".6" stroke-linejoin="round"
+							stroke="#000" fill="#fff" />
+					</svg>
+				</g>
+
+
+			</svg>
+			<g transform="scale(3 3)">
+				<svg id="codesTable" x="80" y="200">
+					<svg id="headerRow" x="0" y="0">
+						<rect x="5" y="5" height="8" width="30" stroke="#000000" stroke-width=".045779" fill="none" />
+						<text x="10" y="12" id="code" font-family="Verdana" font-size="5">
+							Codigo
+						</text>
+						<rect x="35" y="5" height="8" width="30" stroke="#000000" stroke-width=".045779" fill="none" />
+						<text x="40" y="12" id="idTooth" font-family="Verdana" font-size="5">
+							Diente
+						</text>
+						<rect x="65" y="5" height="8" width="30" stroke="#000000" stroke-width=".045779" fill="none" />
+						<text x="70" y="12" id="idFace" font-family="Verdana" font-size="5">
+							Cara
+						</text>
+						<rect x="95" y="5" height="8" width="30" stroke="#000000" stroke-width=".045779" fill="none" />
+						<text x="100" y="12" id="maxilaryType" font-family="Verdana" font-size="5">
+							Maxilar
+						</text>
+						<rect x="125" y="5" height="8" width="40" stroke="#000000" stroke-width=".045779" fill="none" />
+						<text x="127" y="12" id="patientConf" font-family="Verdana" font-size="5">
+							Conf. Paciente
+						</text>
+					</svg>
+				</svg>
+
+				<svg id="commentsTable" x="0" y="250">
+					<svg id="row0" x="0" y="0">
+						<rect x="5" y="5" height="8" width="320" stroke="#000000" stroke-width=".045779" fill="none" />
+						<text x="10" y="12" id="text" font-family="Verdana" font-size="5">
+							*********|*********|*********|*********|*********|*********|*********|*********|*********|*********|
+						</text>
+					</svg>
+				</svg>
+				<svg id="signsTable" x="175" y="280">
+					<text x="0" y="10" id="text" font-family="Verdana" font-size="5">Firma Paciente</text>
+					<line x1="40" y1="10" x2="150" y2="10" style="stroke:rgb(0,0,0);stroke-width:0.15" />
+					<text x="0" y="30" id="text" font-family="Verdana" font-size="5">Aclaración</text>
+					<line x1="40" y1="30" x2="150" y2="30" style="stroke:rgb(0,0,0);stroke-width:0.15" />
+					<text x="0" y="50" id="text" font-family="Verdana" font-size="5">Firma y sello profesional</text>
+					<line x1="70" y1="50" x2="150" y2="50" style="stroke:rgb(0,0,0);stroke-width:0.15" />
+				</svg>
+			</g>
+		</svg>
+	</svg>
+</body>
+
+</html>
