@@ -5,7 +5,7 @@ import * as path from 'path';
 
 
 let ENDPOINT_DEFINITIONS: endpoint.Definition[] = [
-  serverEndpoints.audioToWaveForm
+  serverEndpoints.generateWeaveForm
 ];
 
 export function start(onServerReady?: Function) {

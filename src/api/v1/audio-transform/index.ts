@@ -1,20 +1,12 @@
 
 import * as utils from '../../utils';
 
-import * as https from 'https';
-import * as AxiosAPI from 'axios';
-import * as moment from 'moment';
-import * as _ from 'lodash';
-
-
-import { handleError } from '../../../core/errors/errors';
-
-
-
+import * as config from 'config';
 
 import fetch from 'node-fetch';
 import { spawn } from 'child_process';
-
+import * as fs from 'fs';
+import * as path from 'path';
 
 import * as ffmpeg from '@ffmpeg-installer/ffmpeg';
 import * as ffprobe from '@ffprobe-installer/ffprobe';
@@ -22,94 +14,68 @@ import * as ffprobe from '@ffprobe-installer/ffprobe';
 const ffmpegPath = ffmpeg.path;
 const ffprobePath = ffprobe.path;
 
-
-import * as fs from 'fs';
-
-
+let downloadDir = config.get('download_dir');
+let filesOrDirsToRemove: string[] = [];
 
 
-export let audioToWaveForm: endpoint.Definition = {
+utils.cleanFolder(downloadDir);
+
+setInterval(() => {
+
+    utils.removeFiles(filesOrDirsToRemove);
+    filesOrDirsToRemove = [];
+}, 1000);
+
+export let generateWeaveForm: endpoint.Definition = {
     id: 'pepe',
     endpoint: {
         method: 'POST',
-        path: '/audio-to-waveform'
+        path: '/generate-waveform'
     },
     // req.body: ConsultationQuery
     callback: async (request: endpoint.IRequest, response: endpoint.IResponse, nextFunction: endpoint.INextFunction) => {
-        let startDate = moment(request.params[`startDate`]);
+
         let body = await utils.getBody(request) as any;
         // console.log(body)
-        if (!body || !Array.isArray(body.urls) || !Number.isInteger(body.samples) || !Array.isArray(body.fields)) {
+        if (!body || !body.audio_url || !Number.isInteger(body.samples) || !Array.isArray(body.fields)) {
             response.status(400);
             response.send(JSON.stringify({
-                error: 'Invalid request, request body should look like this: {"urls": ["https://link.to/sound.wav", "http://link.to/sound.mp3"], "samples": 1000, "fields": ["peaks", "info"]}'
+                error: 'Invalid request, request body should look like this: {"audio_url": "https://link.to/sound.wav", "samples": 1000, "fields": ["peaks", "info"]}'
             }));
+            return;
         }
-        const urls: string[] = body.urls;
+        const url = body.audio_url;
         const samples: number = body.samples;
         const fields: string[] = body.fields;
         const samplesPerSample: number = body.samplesPerSample || 5;
-
-        let data = await fileToWaveform('./tmp/wave.mp3', samples, samplesPerSample);
-        const save: any = {};
-        Object.keys(data).forEach(key => {
-            save[key] = JSON.stringify(data[key]);
-        });
-        const result: any = {};
-        fields.forEach(field => {
-            result[field] = data[field];
-        });
-
-
         try {
-            response.send(JSON.stringify(data));
-        } catch (err) {
-            response.status(400);
-            response.send(err.message);
-        }
-    }
-};
+            let fileName = utils.inferFileName(url);
+            let downloadedFileName = await utils.download(url, path.resolve(downloadDir, fileName));
+            console.log('download ready: ' + downloadedFileName);
+            let downloadedAudioFile = downloadedFileName;
+            let unzippedFolder;
+            if (utils.hasZipExtension(downloadedFileName)) {
+                unzippedFolder = await utils.unzipFile(downloadedFileName);
+                log('Searching unzipped audio file in: ' + unzippedFolder);
+                downloadedAudioFile = utils.getFirstFileInFolder(unzippedFolder);
+                log('Audio File ' + downloadedAudioFile);
+            }
 
 
+            let data = await fileToWaveform(downloadedAudioFile, samples, samplesPerSample);
 
+            filesOrDirsToRemove.push(downloadedFileName);
+            filesOrDirsToRemove.push(unzippedFolder);
 
-export let audioToWaveFormOld: endpoint.Definition = {
-    id: 'pepe',
-    endpoint: {
-        method: 'POST',
-        path: '/audio-to-waveform'
-    },
-    // req.body: ConsultationQuery
-    callback: async (request: endpoint.IRequest, response: endpoint.IResponse, nextFunction: endpoint.INextFunction) => {
-        let startDate = moment(request.params[`startDate`]);
-        let body = await utils.getBody(request) as any;
-        // console.log(body)
-        if (!body || !Array.isArray(body.urls) || !Number.isInteger(body.samples) || !Array.isArray(body.fields)) {
-            response.status(400);
-            response.send(JSON.stringify({
-                error: 'Invalid request, request body should look like this: {"urls": ["https://link.to/sound.wav", "http://link.to/sound.mp3"], "samples": 1000, "fields": ["peaks", "info"]}'
-            }));
-        }
-        const urls: string[] = body.urls;
-        const samples: number = body.samples;
-        const fields: string[] = body.fields;
-        const samplesPerSample: number = body.samplesPerSample || 5;
-        const promises: Promise<any>[] = urls.map(url => {
-            return urlToWaveform(url, samples, samplesPerSample).then((data: any) => {
-                const save: any = {};
-                Object.keys(data).forEach(key => {
-                    save[key] = JSON.stringify(data[key]);
-                });
-                const result: any = {};
-                fields.forEach(field => {
-                    result[field] = data[field];
-                });
+            const save: any = {};
+            Object.keys(data).forEach(key => {
+                save[key] = JSON.stringify(data[key]);
             });
-
-        });
-        try {
-            let allInfo = await Promise.all(promises);
-            response.send(JSON.stringify(allInfo));
+            const result: any = {};
+            fields.forEach(field => {
+                result[field] = data[field];
+            });
+            response.send(JSON.stringify(result));
         } catch (err) {
             response.status(400);
             response.send(err.message);
