@@ -34,14 +34,14 @@ export let generateWeaveForm: endpoint.Definition = {
     },
     // req.body: ConsultationQuery
     callback: async (request: endpoint.IRequest, response: endpoint.IResponse, nextFunction: endpoint.INextFunction) => {
-
         let body = await utils.getBody(request) as any;
-        // console.log(body)
         if (!body || !body.audio_url || !Number.isInteger(body.samples) || !Array.isArray(body.fields)) {
             response.status(400);
+            let error = 'Invalid request, request body should look like this: {"audio_url": "https://link.to/sound.wav", "samples": 1000, "fields": ["peaks", "info"]}';
             response.send(JSON.stringify({
-                error: 'Invalid request, request body should look like this: {"audio_url": "https://link.to/sound.wav", "samples": 1000, "fields": ["peaks", "info"]}'
+                error: error
             }));
+            utils.log.error(error);
             return;
         }
         const url = body.audio_url;
@@ -50,19 +50,27 @@ export let generateWeaveForm: endpoint.Definition = {
         const samplesPerSample: number = body.samplesPerSample || 5;
         try {
             let fileName = utils.inferFileName(url);
+            utils.log.info(`Starting to download url ${url}`);
             let downloadedFileName = await utils.download(url, path.resolve(downloadDir, fileName));
-            console.log('download ready: ' + downloadedFileName);
+            utils.log.info(`Download finished succesfully. File: ${downloadedFileName}`);
             let downloadedAudioFile = downloadedFileName;
             let unzippedFolder;
             if (utils.hasZipExtension(downloadedFileName)) {
+                utils.log.info(`Unzipping file. File: ${downloadedFileName}`);
                 unzippedFolder = await utils.unzipFile(downloadedFileName);
-                log('Searching unzipped audio file in: ' + unzippedFolder);
                 downloadedAudioFile = utils.getFirstFileInFolder(unzippedFolder);
-                log('Audio File ' + downloadedAudioFile);
+                utils.log.info(`Unzipped filename: ${downloadedAudioFile}`);
             }
 
-
-            let data = await fileToWaveform(downloadedAudioFile, samples, samplesPerSample);
+            let data;
+            try {
+                utils.log.info('Starting to process ' + downloadedAudioFile);
+                data = await fileToWaveform(downloadedAudioFile, samples, samplesPerSample);
+                utils.log.info('Process finished successfully');
+            } catch (error) {
+                utils.log.error('Process finished with error: ' + error);
+                throw error;
+            }
 
             filesOrDirsToRemove.push(downloadedFileName);
             filesOrDirsToRemove.push(unzippedFolder);
@@ -75,19 +83,14 @@ export let generateWeaveForm: endpoint.Definition = {
             fields.forEach(field => {
                 result[field] = data[field];
             });
-            response.send(JSON.stringify(result));
+            response.send(result);
         } catch (err) {
             response.status(400);
-            response.send(err.message);
+            utils.log.error(err);
+            response.send(err);
         }
     }
 };
-
-
-
-function log(obj: any) {
-    console.log(JSON.stringify(obj, null, 2));
-}
 
 
 

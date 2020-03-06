@@ -5,9 +5,6 @@
   "main": "./src/index.ts",
   "scripts": {
     "installDevTools": "npm install -g rimraf npm-run-all windows-build-tools",
-    "update": "npm install",
-    "uninstall": "rimraf node_modules",
-    "reinstall": "npm run uninstall && npm run update",
     "ts-node": "node -r ./bin/ts-node.js",
     "ts-node:inspect": "node --inspect -r ./bin/ts-node.js",
     "ts-node:inspect:brk": "node --inspect-brk -r ./bin/ts-node.js",
@@ -21,7 +18,7 @@
     "test:dev:brk": "cross-env NODE_ENV='test' npm run ts-node:inspect:brk node_modules/jasmine/bin/jasmine.js",
     "prebuildProd": "rimraf build",
     "tsc": "node ./node_modules/typescript/bin/tsc",
-    "buildProd": "npm run tsc && xcopy .\\certificates .\\build\\certificates /s /e /i /y && xcopy .\\config .\\build\\config /s /e /y /i && xcopy .\\src\\api\\v1\\consultation\\*.html .\\build\\app\\api\\v1\\consultation /s /e /y /i && xcopy .\\src\\api\\v1\\consultation\\*.js .\\build\\app\\api\\v1\\consultation /s /e /y /i",
+    "buildProd": "npm run tsc && xcopy .\\certificates .\\build\\certificates /s /e /i /y && xcopy .\\config .\\build\\config /s /e /y /i",
     "tslint": "node ./node_modules/tslint/bin/tslint",
     "lint": "npm run tslint -- -p tsconfig.json"
   },
@@ -30,13 +27,13 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "@ffprobe-installer/ffprobe": "^1.0.12",
-    "axios": "^0.19.2",
     "binary-parser": "^1.5.0",
     "body-parser": "^1.18.3",
     "config": "^3.2.5",
     "cuid": "2.1.1",
     "downsample-lttb": "git+https://github.com/pingec/downsample-lttb.git",
     "express": "^4.17.1",
+    "moment": "^2.24.0",
     "node-fetch": "^2.6.0",
     "shelljs": "^0.8.3",
     "unzip": "^0.1.11"

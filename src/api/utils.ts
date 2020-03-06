@@ -5,6 +5,7 @@ import * as fs from 'fs';
 import * as unzip from 'unzip';
 import * as path from 'path';
 import * as shelljs from 'shelljs';
+import * as moment from 'moment';
 
 
 const BodyParser = bodyParser.json({
@@ -56,12 +57,10 @@ export function hasZipExtension(fileName: string) {
  */
 export async function unzipFile(zipFile: string): Promise<string> {
     zipFile = path.resolve(zipFile);
-    log('Unziping' + zipFile);
     let result: Promise<string> = new Promise((resolve, reject) => {
         let unzippedFolder = zipFile.substring(0, zipFile.length - 4);
         let stream = fs.createReadStream(zipFile);
         stream.on('close', () => {
-            log('Unzipped in ' + unzippedFolder);
             resolve(unzippedFolder);
         });
         stream.on('error', (error) => reject(error));
@@ -74,7 +73,6 @@ export function getFirstFileInFolder(folder: string) {
     let files: string[] = fs.readdirSync(folder);
     for (let i = 0; i < files.length; i++) {
         let file = path.resolve(folder, files[i]);
-        console.log(file);
         if (fs.lstatSync(file).isFile()) {
             return file;
         }
@@ -95,13 +93,14 @@ export function removeFiles(files: string[]) {
 
 export async function download(url: string, targetFileName: string): Promise<string> {
     let promise: Promise<string> = new Promise((resolve, reject) => {
-        log('Downloading file: ' + url);
         fetch(url).then((response) => {
+            if (!response.ok) {
+                reject(`Error trying to download.  Error: ${response.statusText}. Url: ${url}`);
+            }
             let writeStream = fs.createWriteStream(targetFileName);
             response.body.pipe(writeStream);
-            writeStream.on('error', (error) => { reject(error); });
+            writeStream.on('error', (error) => { reject(`Error trying to write the downloaded file.  Error: ${error}. File: ${targetFileName}`); });
             writeStream.on('close', () => {
-                log('file ' + url + ' downloaded');
                 resolve(targetFileName);
             });
         }).catch((error) => {
@@ -111,9 +110,17 @@ export async function download(url: string, targetFileName: string): Promise<str
     return promise;
 }
 
-function log(message: string) {
-    console.log(message);
-}
+export let log = {
+    info: (message: string) => {
+        let timestamp = moment().format('YYYY-MM-DD hh:mm:ss.SSS ZZ');
+        console.log(timestamp, message);
+    },
+    error: (message: string) => {
+        let timestamp = moment().format('YYYY-MM-DD hh:mm:ss.SSS ZZ');
+        console.error(timestamp, message);
+    }
+};
+
 
 
 
